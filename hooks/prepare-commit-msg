@@ -15,14 +15,17 @@ def main():
     branch = (
         check_output(["git", "symbolic-ref", "--short", "HEAD"]).decode("utf-8").strip()
     )
-    regex = r"(chore|feature|fix|hotfix)\/(\w+-\d+)"
+    regex_jira_id = r"^(\w+-\d+)"
 
-    if re.match(regex, branch):
-        issue_number = re.match(regex, branch).group(2)
-        with open(commit_msg_filepath, "r+") as f:
-            commit_msg = f.read()
-            f.seek(0, 0)  # correctly positions issue_number when writing commit message
-            f.write(f"[{issue_number}] {commit_msg}")
+    branch_match = re.match(regex_jira_id, branch)
+    if not branch_match:
+        return
+
+    issue_number = branch_match.group(1)
+    with open(commit_msg_filepath, "r+") as f:
+        commit_msg = f.read()
+        f.seek(0, 0)  # correctly positions issue_number when writing commit message
+        f.write(f"[{issue_number}] {commit_msg}")
 
 
 if __name__ == "__main__":
