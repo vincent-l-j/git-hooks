@@ -39,7 +39,12 @@ def main():
     with open(commit_msg_filepath, "r+") as f:
         commit_msg_raw = f.read()
         commit_msg_match = re.match(regex_message, commit_msg_raw)
-        commit_type = commit_msg_match.group(1)
+        try:
+            commit_type = commit_msg_match.group(1)
+        except AttributeError:
+            print("Could not find conventional commit type")
+            return
+
         commit_msg_parsed = commit_msg_match.group(2)
         if re.match(regex_jira_id, commit_msg_parsed):
             return
