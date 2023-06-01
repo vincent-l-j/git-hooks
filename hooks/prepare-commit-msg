@@ -41,6 +41,9 @@ def main():
         commit_msg_match = re.match(regex_message, commit_msg_raw)
         commit_type = commit_msg_match.group(1)
         commit_msg_parsed = commit_msg_match.group(2)
+        if re.match(regex_jira_id, commit_msg_parsed):
+            return
+
         # correctly position issue_number when writing commit message
         f.seek(0, 0)
         f.write(f"{commit_type}: {issue_number} {commit_msg_parsed}")
