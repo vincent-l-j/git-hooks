@@ -15,7 +15,21 @@ def main():
     branch = (
         check_output(["git", "symbolic-ref", "--short", "HEAD"]).decode("utf-8").strip()
     )
+    conventional_commit_types = [
+        "build",
+        "chore",
+        "ci",
+        "docs",
+        "feat",
+        "fix",
+        "infra",
+        "perf",
+        "refactor",
+        "style",
+        "test",
+    ]
     regex_jira_id = r"^(\w+-\d+)"
+    regex_message = r"^(" + "|".join(conventional_commit_types) + r"): (.*)"
 
     branch_match = re.match(regex_jira_id, branch)
     if not branch_match:
@@ -23,9 +37,13 @@ def main():
 
     issue_number = branch_match.group(1)
     with open(commit_msg_filepath, "r+") as f:
-        commit_msg = f.read()
-        f.seek(0, 0)  # correctly positions issue_number when writing commit message
-        f.write(f"[{issue_number}] {commit_msg}")
+        commit_msg_raw = f.read()
+        commit_msg_match = re.match(regex_message, commit_msg_raw)
+        commit_type = commit_msg_match.group(1)
+        commit_msg_parsed = commit_msg_match.group(2)
+        # correctly position issue_number when writing commit message
+        f.seek(0, 0)
+        f.write(f"{commit_type}: {issue_number} {commit_msg_parsed}")
 
 
 if __name__ == "__main__":
