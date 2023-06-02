@@ -50,21 +50,20 @@ def main():
         return
 
     issue_number = branch_match.group(1)
-    with open(commit_msg_filepath, "r+") as f:
+    with open(commit_msg_filepath, "r") as f:
         commit_msg_raw = f.read()
-        commit_msg_match = re.match(regex_message, commit_msg_raw)
-        try:
-            commit_type = commit_msg_match.group(1)
-        except AttributeError:
-            print("Could not find conventional commit type")
-            return
+    commit_msg_match = re.match(regex_message, commit_msg_raw)
+    try:
+        commit_type = commit_msg_match.group(1)
+    except AttributeError:
+        print("Could not find conventional commit type")
+        return
 
-        commit_msg_parsed = commit_msg_match.group(4)
-        if re.match(regex_jira_id, commit_msg_parsed):
-            return
+    commit_msg_parsed = commit_msg_match.group(4)
+    if re.match(regex_jira_id, commit_msg_parsed):
+        return
 
-        # correctly position issue_number when writing commit message
-        f.seek(0, 0)
+    with open(commit_msg_filepath, "w") as f:
         f.write(f"{commit_type}: {issue_number} {commit_msg_parsed}")
 
 
