@@ -41,7 +41,7 @@ def main():
         "test",
     ]
     regex_jira_id = r"^(\w+-\d+)"
-    regex_message = r"^(" + "|".join(conventional_commit_types) + r"): (.*)"
+    regex_message = r"^((" + "|".join(conventional_commit_types) + r")!?): (.*)"
 
     branch_match = re.match(regex_jira_id, branch)
     if not branch_match:
@@ -57,7 +57,7 @@ def main():
             print("Could not find conventional commit type")
             return
 
-        commit_msg_parsed = commit_msg_match.group(2)
+        commit_msg_parsed = commit_msg_match.group(3)
         if re.match(regex_jira_id, commit_msg_parsed):
             return
 
