@@ -40,7 +40,7 @@ def main():
         "style",
         "test",
     ]
-    regex_jira_id = r"^(\w+-\d+)"
+    regex_jira_id = r"^(\w+-\d+)(\s+)?(.*)"
     regex_message = (
         r"^((" + "|".join(conventional_commit_types) + r")(\([\w\s-]+\))?!?): (.*)"
     )
@@ -60,8 +60,11 @@ def main():
         return
 
     commit_msg_parsed = commit_msg_match.group(4)
-    if re.match(regex_jira_id, commit_msg_parsed):
-        return
+    commit_match = re.match(regex_jira_id, commit_msg_parsed)
+    if commit_match:
+        if (issue_number == commit_match.group(1)) and (commit_match.group(2) == " "):
+            return
+        commit_msg_parsed = commit_match.group(3).lstrip()
 
     with open(commit_msg_filepath, "w") as f:
         f.write(f"{commit_type}: {issue_number} {commit_msg_parsed}")
