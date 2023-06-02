@@ -7,14 +7,26 @@ Git hook to automatically prefix a git commit message with an issue number
 
 import re
 import sys
-from subprocess import check_output
+from subprocess import (
+    CalledProcessError,
+    check_output,
+    DEVNULL,
+)
 
 
 def main():
     commit_msg_filepath = sys.argv[1]
-    branch = (
-        check_output(["git", "symbolic-ref", "--short", "HEAD"]).decode("utf-8").strip()
-    )
+    try:
+        branch = (
+            check_output(
+                ["git", "symbolic-ref", "--short", "HEAD"],
+                stderr=DEVNULL,
+            )
+            .decode("utf-8")
+            .strip()
+        )
+    except CalledProcessError:
+        return
     conventional_commit_types = [
         "build",
         "chore",
