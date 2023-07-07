@@ -27,6 +27,11 @@ def main():
         )
     except CalledProcessError:
         return
+
+    branch_split = branch.split("/")
+    # ignore the branch type
+    if len(branch_split) > 1:
+        branch = "".join(branch_split[1:])
     conventional_commit_types = [
         "build",
         "chore",
