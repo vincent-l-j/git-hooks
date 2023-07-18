@@ -56,7 +56,8 @@ def main():
 
     issue_number = branch_match.group(1)
     with open(commit_msg_filepath, "r") as f:
-        commit_msg_raw = f.read()
+        msg_lines = f.readlines()
+        commit_msg_raw = msg_lines[0]
     commit_msg_match = re.match(regex_message, commit_msg_raw)
     try:
         commit_type = commit_msg_match.group(1)
@@ -72,7 +73,8 @@ def main():
         commit_msg_parsed = commit_match.group(3).lstrip()
 
     with open(commit_msg_filepath, "w") as f:
-        f.write(f"{commit_type}: {issue_number} {commit_msg_parsed}")
+        msg_lines[0] = f"{commit_type}: {issue_number} {commit_msg_parsed}\n"
+        f.writelines(msg_lines)
 
 
 if __name__ == "__main__":
